@@ -1,4 +1,7 @@
 use float_cmp::{ApproxEq, F64Margin};
+use std::ops::Add;
+use std::ops::Neg;
+use std::ops::Sub;
 
 #[derive(Debug)]
 pub struct Vec4 {
@@ -17,6 +20,44 @@ impl PartialEq for Vec4 {
     }
 }
 
+impl Add for Vec4 {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: self.w + other.w,
+        }
+    }
+}
+
+impl Sub for Vec4 {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+            w: self.w - other.w,
+        }
+    }
+}
+
+impl Neg for Vec4 {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Self {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            w: -self.w,
+        }
+    }
+}
 const POINT_W: f64 = 1.0;
 const VECTOR_W: f64 = 0.0;
 const F64_MARGIN: F64Margin = F64Margin {
