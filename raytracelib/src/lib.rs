@@ -6,14 +6,14 @@ use std::ops::Neg;
 use std::ops::Sub;
 
 #[derive(Debug)]
-pub struct Vec4 {
+pub struct Tuple {
     x: f64,
     y: f64,
     z: f64,
     w: f64,
 }
 
-impl PartialEq for Vec4 {
+impl PartialEq for Tuple {
     fn eq(&self, other: &Self) -> bool {
         self.x.approx_eq(other.x, F64_MARGIN)
             && self.y.approx_eq(other.y, F64_MARGIN)
@@ -22,7 +22,7 @@ impl PartialEq for Vec4 {
     }
 }
 
-impl Add for Vec4 {
+impl Add for Tuple {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -35,7 +35,7 @@ impl Add for Vec4 {
     }
 }
 
-impl Sub for Vec4 {
+impl Sub for Tuple {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
@@ -48,7 +48,7 @@ impl Sub for Vec4 {
     }
 }
 
-impl Neg for Vec4 {
+impl Neg for Tuple {
     type Output = Self;
 
     fn neg(self) -> Self {
@@ -61,7 +61,7 @@ impl Neg for Vec4 {
     }
 }
 
-impl Mul<f64> for Vec4 {
+impl Mul<f64> for Tuple {
     type Output = Self;
     fn mul(self, rhs: f64) -> Self::Output {
         Self {
@@ -73,7 +73,7 @@ impl Mul<f64> for Vec4 {
     }
 }
 
-impl Div<f64> for Vec4 {
+impl Div<f64> for Tuple {
     type Output = Self;
     fn div(self, rhs: f64) -> Self::Output {
         Self {
@@ -92,9 +92,9 @@ const F64_MARGIN: F64Margin = F64Margin {
     ulps: 2,
 };
 
-impl Vec4 {
-    pub fn point(x: f64, y: f64, z: f64) -> Vec4 {
-        Vec4 {
+impl Tuple {
+    pub fn point(x: f64, y: f64, z: f64) -> Tuple {
+        Tuple {
             x,
             y,
             z,
@@ -102,8 +102,8 @@ impl Vec4 {
         }
     }
 
-    pub fn vector(x: f64, y: f64, z: f64) -> Vec4 {
-        Vec4 {
+    pub fn vector(x: f64, y: f64, z: f64) -> Tuple {
+        Tuple {
             x,
             y,
             z,
@@ -122,11 +122,11 @@ impl Vec4 {
 
 #[cfg(test)]
 mod tests {
-    use super::Vec4;
+    use super::Tuple;
     #[test]
     fn is_point() {
         // A tuple with w=1.0 is a point
-        let result = Vec4 {
+        let result = Tuple {
             x: 4.3,
             y: -4.2,
             z: 3.1,
@@ -142,7 +142,7 @@ mod tests {
     #[test]
     fn is_vector() {
         // A tuple with w=0 is a vector
-        let result = Vec4 {
+        let result = Tuple {
             x: 4.3,
             y: -4.2,
             z: 3.1,
@@ -159,8 +159,8 @@ mod tests {
     #[test]
     fn make_point() {
         // point() creates tuples with w=1
-        let p = Vec4::point(4.0, -4.0, 3.0);
-        let v: Vec4 = Vec4 {
+        let p = Tuple::point(4.0, -4.0, 3.0);
+        let v: Tuple = Tuple {
             x: 4.0,
             y: -4.0,
             z: 3.0,
@@ -172,8 +172,8 @@ mod tests {
     #[test]
     fn make_vector() {
         // vector() creates tuples with w=0
-        let p = Vec4::vector(4.0, -4.0, 1.0);
-        let v: Vec4 = Vec4 {
+        let p = Tuple::vector(4.0, -4.0, 1.0);
+        let v: Tuple = Tuple {
             x: 4.0,
             y: -4.0,
             z: 1.0,
@@ -189,21 +189,21 @@ mod tests {
     #[test]
     fn add_vectors() {
         // Adding two vectors
-        let a1 = Vec4 {
+        let a1 = Tuple {
             x: 3.0,
             y: -2.0,
             z: 5.0,
             w: 1.0,
         };
         
-        let a2 = Vec4 {
+        let a2 = Tuple {
             x: -2.0,
             y: 3.0,
             z: 1.0,
             w: 0.0,
         };
 
-        let result = Vec4 {
+        let result = Tuple {
             x: 1.0,
             y: 1.0,
             z: 6.0,
@@ -220,27 +220,27 @@ mod tests {
     #[test]
     fn sub_two_points() {
         // Subtracting two points
-        let p1 = Vec4::point(3.0,2.0,1.0);
-        let p2 = Vec4::point(5.0,6.0,7.0);
-        let result = Vec4::vector(-2.0, -4.0, -6.0);
+        let p1 = Tuple::point(3.0,2.0,1.0);
+        let p2 = Tuple::point(5.0,6.0,7.0);
+        let result = Tuple::vector(-2.0, -4.0, -6.0);
         assert_eq!(p1 - p2, result);
     }
 
     #[test]
     fn sub_vector_from_point() {
         // Subtracting a vector from a point
-        let p = Vec4::point(3.0,2.0,1.0);
-        let v = Vec4::vector(5.0,6.0,7.0);
-        let result = Vec4::point(-2.0, -4.0, -6.0);
+        let p = Tuple::point(3.0,2.0,1.0);
+        let v = Tuple::vector(5.0,6.0,7.0);
+        let result = Tuple::point(-2.0, -4.0, -6.0);
         assert_eq!(p - v, result);
     }
 
     #[test]
     fn sub_two_vectors() {
         // Subtracting two vectors
-        let v1 = Vec4::vector(3.0,2.0,1.0);
-        let v2 = Vec4::vector(5.0,6.0,7.0);
-        let result = Vec4::vector(-2.0, -4.0, -6.0);
+        let v1 = Tuple::vector(3.0,2.0,1.0);
+        let v2 = Tuple::vector(5.0,6.0,7.0);
+        let result = Tuple::vector(-2.0, -4.0, -6.0);
         assert_eq!(v1 - v2, result);
     } 
 }
