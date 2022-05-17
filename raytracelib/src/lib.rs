@@ -77,10 +77,10 @@ impl Div<f64> for Tuple {
     type Output = Self;
     fn div(self, rhs: f64) -> Self::Output {
         Self {
-            x: rhs / self.x,
-            y: rhs / self.y,
-            z: rhs / self.z,
-            w: rhs / self.w,
+            x: self.x / rhs,
+            y: self.y / rhs,
+            z: self.z / rhs,
+            w: self.w / rhs,
         }
     }
 }
@@ -183,7 +183,7 @@ mod tests {
     }
 
     /*
-     * Adding 
+     * Adding Tuples
      */
 
     #[test]
@@ -195,7 +195,7 @@ mod tests {
             z: 5.0,
             w: 1.0,
         };
-        
+
         let a2 = Tuple {
             x: -2.0,
             y: 3.0,
@@ -209,19 +209,19 @@ mod tests {
             z: 6.0,
             w: 1.0,
         };
-             
+
         assert_eq!(a1 + a2, result);
     }
 
     /*
-     * Subtracting
+     * Subtracting Tuples
      */
 
     #[test]
     fn sub_two_points() {
         // Subtracting two points
-        let p1 = Tuple::point(3.0,2.0,1.0);
-        let p2 = Tuple::point(5.0,6.0,7.0);
+        let p1 = Tuple::point(3.0, 2.0, 1.0);
+        let p2 = Tuple::point(5.0, 6.0, 7.0);
         let result = Tuple::vector(-2.0, -4.0, -6.0);
         assert_eq!(p1 - p2, result);
     }
@@ -229,8 +229,8 @@ mod tests {
     #[test]
     fn sub_vector_from_point() {
         // Subtracting a vector from a point
-        let p = Tuple::point(3.0,2.0,1.0);
-        let v = Tuple::vector(5.0,6.0,7.0);
+        let p = Tuple::point(3.0, 2.0, 1.0);
+        let v = Tuple::vector(5.0, 6.0, 7.0);
         let result = Tuple::point(-2.0, -4.0, -6.0);
         assert_eq!(p - v, result);
     }
@@ -238,9 +238,98 @@ mod tests {
     #[test]
     fn sub_two_vectors() {
         // Subtracting two vectors
-        let v1 = Tuple::vector(3.0,2.0,1.0);
-        let v2 = Tuple::vector(5.0,6.0,7.0);
+        let v1 = Tuple::vector(3.0, 2.0, 1.0);
+        let v2 = Tuple::vector(5.0, 6.0, 7.0);
         let result = Tuple::vector(-2.0, -4.0, -6.0);
         assert_eq!(v1 - v2, result);
-    } 
+    }
+
+    /*
+     * Negating Tuples
+     */
+
+    #[test]
+    fn sub_from_zero() {
+        let zero = Tuple::vector(0.0, 0.0, 0.0);
+        let v = Tuple::vector(1.0, -2.0, 3.0);
+        assert_eq!(zero - v, Tuple::vector(-1.0, 2.0, -3.0));
+    }
+
+    #[test]
+    fn negate_tuple() {
+        let a = Tuple {
+            x: 1.0,
+            y: -2.0,
+            z: 3.0,
+            w: -4.0,
+        };
+        assert_eq!(
+            -a,
+            Tuple {
+                x: -1.0,
+                y: 2.0,
+                z: -3.0,
+                w: 4.0
+            }
+        );
+    }
+
+    /*
+     * Scalar Multiplication and Division
+     */
+    #[test]
+    fn test_mult_by_scalar() {
+        // Multiplying a tuple by a scalar
+        let a = Tuple {
+            x: 1.0,
+            y: -2.0,
+            z: 3.0,
+            w: -4.0,
+        };
+
+        let result = Tuple {
+            x: 3.5,
+            y: -7.0,
+            z: 10.5,
+            w: -14.0,
+        };
+        assert_eq!(a * 3.5, result);
+    }
+    #[test]
+    fn test_mult_by_fraction() {
+        // Multiplying a tuple by a fraction
+        let a = Tuple {
+            x: 1.0,
+            y: -2.0,
+            z: 3.0,
+            w: -4.0,
+        };
+
+        let result = Tuple {
+            x: 0.5,
+            y: -1.0,
+            z: 1.5,
+            w: -2.0,
+        };
+        assert_eq!(a * 0.5, result);
+    }
+
+    #[test]
+    fn test_div_by_scalar() {
+        // Dividing a tuple by a scalar
+        let a = Tuple {
+            x: 1.0,
+            y: -2.0,
+            z: 3.0,
+            w: -4.0,
+        };
+
+        let result = Tuple {
+            x: 0.5,
+            y: -1.0,
+            z: 1.5,
+            w: -2.0,
+        };
+        assert_eq!(a / 2.0, result);
+    }
 }
