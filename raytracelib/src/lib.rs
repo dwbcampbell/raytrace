@@ -1,4 +1,5 @@
 use float_cmp::{ApproxEq, F64Margin};
+use std::f64;
 use std::ops::Add;
 use std::ops::Div;
 use std::ops::Mul;
@@ -117,6 +118,32 @@ impl Tuple {
 
     pub fn is_vector(&self) -> bool {
         self.w.approx_eq(VECTOR_W, F64_MARGIN)
+    }
+
+    pub fn magnitude(&self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2) + self.w.powi(2)).sqrt()
+    }
+
+    pub fn normalize(&self) -> Tuple {
+        let magnitude = self.magnitude();
+        Tuple {
+            x: self.x / magnitude,
+            y: self.y / magnitude,
+            z: self.z / magnitude,
+            w: self.w / magnitude,
+        }
+    }
+
+    pub fn dot(&self, rhs: &Tuple) -> f64 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w
+    }
+
+    pub fn cross(&self, rhs: &Tuple) -> Tuple {
+        Tuple::vector(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 }
 
@@ -331,5 +358,74 @@ mod tests {
             w: -2.0,
         };
         assert_eq!(a / 2.0, result);
+    }
+
+    #[test]
+    fn test_magnitude_1() {
+        let v = Tuple::vector(0.0, 1.0, 0.0);
+        assert_eq!(v.magnitude(), 1.0);
+    }
+
+    #[test]
+    fn test_magnitude_2() {
+        let v = Tuple::vector(0.0, 0.0, 1.0);
+        assert_eq!(v.magnitude(), 1.0);
+    }
+
+    #[test]
+    fn test_magnitude_3() {
+        let v = Tuple::vector(1.0, 2.0, 3.0);
+        assert_eq!(v.magnitude(), 14.0_f64.sqrt());
+    }
+
+    #[test]
+    fn test_magnitude_4() {
+        let v = Tuple::vector(-1.0, -2.0, -3.0);
+        assert_eq!(v.magnitude(), 14.0_f64.sqrt());
+    }
+
+    #[test]
+    fn test_normalizing_1() {
+        // Normalizing vector(4, 0, 0)
+        let v = Tuple::vector(4.0, 0.0, 0.0);
+        assert_eq!(v.normalize(), Tuple::vector(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_normalizing_2() {
+        // Normalizing vector(1, 2, 3)
+        let v = Tuple::vector(1.0, 2.0, 3.0);
+        assert_eq!(
+            v.normalize(),
+            Tuple::vector(
+                1.0 / 14.0_f64.sqrt(),
+                2.0 / 14.0_f64.sqrt(),
+                3.0 / 14.0_f64.sqrt()
+            )
+        );
+    }
+
+    #[test]
+    fn test_normalizing_3() {
+        // The magnitude of a normalized vector
+        let v = Tuple::vector(1.0, 2.0, 3.0);
+        assert_eq!(v.normalize().magnitude(), 1.0);
+    }
+
+    #[test]
+    fn test_dot_product() {
+        // The magnitude of a normalized vector
+        let v1 = Tuple::vector(1.0, 2.0, 3.0);
+        let v2 = Tuple::vector(2.0, 3.0, 4.0);
+        assert_eq!(v1.dot(&v2), 20.0);
+    }
+
+    #[test]
+    fn test_cross_product() {
+        // The magnitude of a normalized vector
+        let v1 = Tuple::vector(1.0, 2.0, 3.0);
+        let v2 = Tuple::vector(2.0, 3.0, 4.0);
+        assert_eq!(v1.cross(&v2), Tuple::vector(-1.0, 2.0, -1.0));
+        assert_eq!(v2.cross(&v1), Tuple::vector(1.0, -2.0, 1.0));
     }
 }
