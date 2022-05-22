@@ -1,4 +1,5 @@
-use raytracelib::{self, Tuple};
+use raytracelib::{self, canvas::Canvas, color::Color, Tuple};
+use std::io;
 
 struct Projectile {
     position: Tuple,
@@ -21,10 +22,11 @@ fn tick(env: &Environment, proj: &Projectile) -> Projectile {
 }
 
 fn main() {
-    let v = Tuple::vector(1.0, 1.0, 0.0);
+    let v = Tuple::normalize(&Tuple::vector(1.0, 1.8, 0.0)) * 11.25;
+
     let mut p = Projectile {
         position: Tuple::point(0.0, 1.0, 0.0),
-        velocity: Tuple::normalize(&v),
+        velocity: v,
     };
 
     let e = Environment {
@@ -32,8 +34,19 @@ fn main() {
         wind: Tuple::vector(-0.01, 0.0, 0.0),
     };
 
+    let mut canvas: Canvas = Canvas::new(900, 550);
     while p.position.y > 0.0 {
         p = tick(&e, &p);
-        println!("{}f32 {}f32", p.position.x, p.position.y);
+        canvas.write_pixel(
+            p.position.x.round() as usize,
+            550 - (p.position.y.round() as usize),
+            Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+            },
+        );
     }
+
+    canvas.write_to_ppm(&mut io::stdout());
 }

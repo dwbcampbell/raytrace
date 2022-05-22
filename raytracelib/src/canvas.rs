@@ -12,7 +12,7 @@ fn to_rgb(val: f64) -> i32 {
 }
 
 impl Canvas {
-    pub fn new(rows: usize, cols: usize) -> Canvas {
+    pub fn new(width: usize, height: usize) -> Canvas {
         Canvas {
             pixels: Array2D::filled_with(
                 Color {
@@ -20,14 +20,14 @@ impl Canvas {
                     green: 0.0,
                     blue: 0.0,
                 },
-                rows,
-                cols,
+                height,
+                width,
             ),
         }
     }
 
     pub fn at(&self, x: usize, y: usize) -> &Color {
-        &self.pixels[(x, y)]
+        &self.pixels[(y, x)]
     }
 
     pub fn to_rgb(&self, x: usize, y: usize) -> (i32, i32, i32) {
@@ -35,8 +35,8 @@ impl Canvas {
         (to_rgb(pix.red), to_rgb(pix.green), to_rgb(pix.blue))
     }
 
-    pub fn write_pixel(mut self, x: usize, y: usize, c: Color) -> Canvas {
-        match self.pixels.set(x, y, c) {
+    pub fn write_pixel(&mut self, x: usize, y: usize, c: Color) -> &mut Canvas {
+        match self.pixels.set(y, x, c) {
             Ok(_) => self,
             Err(_) => self,
         }
@@ -48,7 +48,7 @@ impl Canvas {
         writeln!(
             output,
             "{} {}",
-            self.pixels.num_rows(),
+            self.pixels.num_columns(),
             self.pixels.num_rows()
         )
         .unwrap();
@@ -81,8 +81,8 @@ mod tests {
     #[test]
     fn test_construct() {
         let array = Canvas::new(10, 20);
-        assert_eq!(array.pixels.num_rows(), 10);
-        assert_eq!(array.pixels.num_columns(), 20);
+        assert_eq!(array.pixels.num_rows(), 20);
+        assert_eq!(array.pixels.num_columns(), 10);
         for row_iter in array.pixels.rows_iter() {
             for element in row_iter {
                 assert_eq!(element.red, 0.0);
@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn test_write_red() {
-        let c = Canvas::new(10, 20);
+        let mut c = Canvas::new(10, 20);
         let red = crate::color::Color {
             red: 1.0,
             green: 0.0,
@@ -112,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_ppm() {
-        let c = Canvas::new(5, 3);
+        let mut c = Canvas::new(5, 3);
         let c1 = crate::color::Color {
             red: 1.0,
             green: 0.0,
@@ -140,6 +140,13 @@ mod tests {
         c.write_to_ppm(&mut buf);
         let bytes = buf.into_inner().unwrap();
         let string = String::from_utf8(bytes).unwrap();
-        assert_eq!(string, "P3\n5 5\n255\n255 0 0 0 0 0 0 0 0 \n0 0 0 0 0 0 0 0 0 \n0 0 0 0 128 0 0 0 0 \n0 0 0 0 0 0 0 0 0 \n0 0 0 0 0 0 0 0 255 \n");
+        let result = r#"P3
+5 3
+255
+255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 
+"#;
+        assert_eq!(string, String::from(result));
     }
 }
