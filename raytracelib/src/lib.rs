@@ -6,6 +6,9 @@ use std::ops::Mul;
 use std::ops::Neg;
 use std::ops::Sub;
 
+pub mod canvas;
+pub mod color;
+
 #[derive(Debug, Copy, Clone)]
 pub struct Tuple {
     pub x: f64,
