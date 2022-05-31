@@ -2,5 +2,6 @@
 
 members = [
     "raytracelib",
-    "projectile"
+    "projectile",
+    "projectile_native"
 ]
